@@ -23,22 +23,35 @@ const { defineProperty, hasOwnProperty, isFrozen } = Object;
 const { apply } = Reflect;
 const implementationName = 'isTemplateObject';
 
-function isFrozenStringArray(arr) {
+function isFrozenStringArray(arr, allowUndefined) {
   if (isArray(arr) && isFrozen(arr)) {
     const { length } = arr;
     for (let i = 0; i < length; ++i) {
-      if (typeof arr[i] !== 'string') {
+      const type = typeof arr[i];
+      if (!(type === 'string' || (allowUndefined && type === 'undefined'))) {
         return false;
       }
     }
-    return true;
+    return length !== 0;
   }
   return false;
 }
 
 function isTemplateObject(x) {
   // TODO: actually implement this properly
-  return isFrozenStringArray(x) && isFrozenStringArray(x.raw);
+  if (!isFrozenStringArray(x, true)) {
+    return false;
+  }
+  const { raw } = x;
+  if (!isFrozenStringArray(raw, false)) {
+    return false;
+  }
+  // TODO: ideally we would not sample length here and in isFrozenStringArray
+  // to avoid double hitting proxies.
+  if (raw.length !== x.length) {
+    return false;
+  }
+  return true;
 }
 
 defineProperty(
