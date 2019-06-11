@@ -73,9 +73,16 @@ describe('impl', () => {
       expect(isTemplateObject`a ${ null } b`).to.equal(true);
     });
     it('bad escape', () => {
-      // This use of eval lets eslint parse most of this file while still testing
+      // These uses of eval let eslint parse most of this file while still testing
       // isTemplateObject against an input that was problematic in earlier versions
       // of EcmaScript but which is valid in modern versions.
+      try {
+        // eslint-disable-next-line no-eval
+        eval(' (function () {})`\\x` ');
+      } catch (exc) {
+        // On old JS engine
+        return;
+      }
       // eslint-disable-next-line no-eval
       expect(eval(' isTemplateObject`\\x` ')).to.equal(true);
     });
