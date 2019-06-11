@@ -29,9 +29,8 @@ function addraw(
     freezeRaw = true,
     raw = 'copy',
   } = {}) {
-
   if (raw === 'copy') {
-    raw = [...arr];
+    raw = [ ...arr ];
   }
   if (typeof raw === 'function') {
     raw = raw();
@@ -50,30 +49,35 @@ function addraw(
 describe('impl', () => {
   describe('negative', () => {
     it('empty', () => {
-      expect(isTemplateObject(addraw([]))).to.be.false;
+      expect(isTemplateObject(addraw([]))).to.equal(false);
     });
     it('numbers not recognized', () => {
-      expect(isTemplateObject(addraw([1]))).to.be.false;
+      expect(isTemplateObject(addraw([ 1 ]))).to.equal(false);
     });
     it('unfrozen strings', () => {
-      expect(isTemplateObject(addraw(['a', 'b'], { freeze: false }))).to.be.false;
+      expect(isTemplateObject(addraw([ 'a', 'b' ], { freeze: false }))).to.equal(false);
     });
     it('unfrozen raw', () => {
-      expect(isTemplateObject(addraw(['a', 'b'], { freezeRaw: false }))).to.be.false;
+      expect(isTemplateObject(addraw([ 'a', 'b' ], { freezeRaw: false }))).to.equal(false);
     });
     it('mismatched lengths', () => {
-      expect(isTemplateObject(addraw(['a', 'b'], { raw: ['a'] }))).to.be.false;
+      expect(isTemplateObject(addraw([ 'a', 'b' ], { raw: [ 'a' ] }))).to.equal(false);
     });
     it('missing raw not null', () => {
-      expect(isTemplateObject(addraw(['a', 'b'], { raw: () => undefined }))).to.be.false;
+      // eslint-disable-next-line no-undefined
+      expect(isTemplateObject(addraw([ 'a', 'b' ], { raw: () => undefined }))).to.equal(false);
     });
   });
   describe('positive', () => {
     it('a, b', () => {
-      expect(isTemplateObject`a ${ null } b`).to.be.true;
+      expect(isTemplateObject`a ${ null } b`).to.equal(true);
     });
     it('bad escape', () => {
-      expect(isTemplateObject`\x`).to.be.true;
+      // This use of eval lets eslint parse most of this file while still testing
+      // isTemplateObject against an input that was problematic in earlier versions
+      // of EcmaScript but which is valid in modern versions.
+      // eslint-disable-next-line no-eval
+      expect(eval(' isTemplateObject`\\x` ')).to.equal(true);
     });
   });
 });
