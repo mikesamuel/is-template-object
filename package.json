@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "Polyfill for Array.isTemplateObject",
   "main": "index.js",
+  "files": [
+    "auto.js",
+    "implementation.js",
+    "index.js",
+    "polyfill.js",
+    "shim.js"
+  ],
   "scripts": {
     "test": "mocha"
   },
