@@ -17,17 +17,21 @@
 
 'use strict';
 
+/* eslint "no-var": off, "prefer-destructuring": off */
+
 // TODO: should I use es-abstract here instead?
-const { isArray, isTemplateObject: nativeImpl } = Array;
-const { defineProperty, hasOwnProperty, isFrozen } = Object;
-const { apply } = Reflect;
-const implementationName = 'isTemplateObject';
+var isArray = Array.isArray;
+var nativeImpl = Array.isTemplateObject;
+var defineProperty = Object.defineProperty;
+var hasOwnProperty = Object.hasOwnProperty;
+var isFrozen = Object.isFrozen;
+var apply = Reflect.apply;
+var implementationName = 'isTemplateObject';
 
 function isFrozenStringArray(arr, allowUndefined) {
   if (isArray(arr) && isFrozen(arr)) {
-    const { length } = arr;
-    for (let i = 0; i < length; ++i) {
-      const type = typeof arr[i];
+    for (var i = 0, length = arr.length; i < length; ++i) {
+      var type = typeof arr[i];
       if (!(type === 'string' || (allowUndefined && type === 'undefined'))) {
         return false;
       }
@@ -42,7 +46,7 @@ function isTemplateObject(x) {
   if (!isFrozenStringArray(x, true)) {
     return false;
   }
-  const { raw } = x;
+  var raw = x.raw;
   if (!isFrozenStringArray(raw, false)) {
     return false;
   }
@@ -75,7 +79,7 @@ defineProperty(
   {
     // eslint-disable-next-line func-name-matching
     value: function shim() {
-      const Array = [].constructor;
+      var Array = [].constructor;
       if (!apply(hasOwnProperty, Array, [ implementationName ])) {
         defineProperty(
           Array,
