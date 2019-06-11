@@ -1,8 +1,16 @@
 # is-template-object
 
-provides an [ES Shim](https://github.com/es-shims/es-shim-api) for the
-[Array.isTemplateObject](https://github.com/tc39/proposal-array-is-template-object)
-proposal.
+<!-- This verbiage required per https://github.com/es-shims/es-shim-api#how-to-denote-compliance.
+     Do not modify without consulting those docs. -->
+
+This package implements the [es-shim API](https://github.com/es-shims/api) interface. It works in an ES5-supported environment and complies with the [spec](https://github.com/tc39/proposal-array-is-template-object).
+
+<!-- End required verbiage -->
+
+Supports: >= ES2015<br>
+Requires receiver: false
+
+## Usage
 
 ```js
 const { isTemplateObject } = require('is-template-object');
