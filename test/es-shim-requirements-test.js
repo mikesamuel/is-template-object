@@ -19,13 +19,14 @@
 
 'use strict';
 
+const getDescriptors = require('object.getownpropertydescriptors');
 const { expect } = require('chai');
 const { describe, it } = require('mocha');
 
 function doesNotModifyArray(action) {
-  const arrayBits = Object.getOwnPropertyDescriptors(Array);
+  const arrayBits = getDescriptors(Array);
   const result = action();
-  expect(Object.getOwnPropertyDescriptors(Array)).to.deep.equals(arrayBits);
+  expect(getDescriptors(Array)).to.deep.equals(arrayBits);
   return result;
 }
 
