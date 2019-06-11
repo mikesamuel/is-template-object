@@ -10,6 +10,12 @@ This package implements the [es-shim API](https://github.com/es-shims/api) inter
 Supports: >= ES2015<br>
 Requires receiver: false
 
+[![Build Status](https://travis-ci.org/mikesamuel/is-template-object.svg?branch=master)](https://travis-ci.org/mikesamuel/is-template-object)
+[![Dependencies Status](https://david-dm.org/mikesamuel/is-template-object/status.svg)](https://david-dm.org/mikesamuel/is-template-object)
+[![npm](https://img.shields.io/npm/v/is-template-object.svg)](https://www.npmjs.com/package/is-template-object)
+[![Coverage Status](https://coveralls.io/repos/github/mikesamuel/is-template-object/badge.svg?branch=master)](https://coveralls.io/github/mikesamuel/is-template-object?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/mikesamuel/is-template-object/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mikesamuel/is-template-object?targetFile=package.json)
+
 ## Usage
 
 ```js
