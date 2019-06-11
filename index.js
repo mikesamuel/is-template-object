@@ -23,11 +23,6 @@ const { defineProperty, hasOwnProperty, isFrozen } = Object;
 const { apply } = Reflect;
 const implementationName = 'isTemplateObject';
 
-function isTemplateObject(x) {
-  // TODO: actually implement this properly
-  return isFrozenStringArray(x) && isFrozenStringArray(x.raw);
-}
-
 function isFrozenStringArray(arr) {
   if (isArray(arr) && isFrozen(arr)) {
     const { length } = arr;
@@ -41,6 +36,11 @@ function isFrozenStringArray(arr) {
   return false;
 }
 
+function isTemplateObject(x) {
+  // TODO: actually implement this properly
+  return isFrozenStringArray(x) && isFrozenStringArray(x.raw);
+}
+
 defineProperty(
   isTemplateObject,
   'implementation',
@@ -50,6 +50,7 @@ defineProperty(
   isTemplateObject,
   'getPolyfill',
   {
+    // eslint-disable-next-line func-name-matching
     value: function getPolyfill() {
       return nativeImpl || isTemplateObject;
     },
@@ -59,6 +60,7 @@ defineProperty(
   isTemplateObject,
   'shim',
   {
+    // eslint-disable-next-line func-name-matching
     value: function shim() {
       const Array = [].constructor;
       if (!apply(hasOwnProperty, Array, [ implementationName ])) {
@@ -68,7 +70,7 @@ defineProperty(
           {
             writable: true,
             configurable: true,
-            value: isTemplateObject
+            value: isTemplateObject,
           });
       }
     },

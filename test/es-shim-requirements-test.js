@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
+/* eslint "global-require": off */
+
 'use strict';
 
 const { expect } = require('chai');
 const { describe, it } = require('mocha');
 
-function doesNotModifyArray(fn) {
+function doesNotModifyArray(action) {
   const arrayBits = Object.getOwnPropertyDescriptors(Array);
-  const result = fn();
+  const result = action();
   expect(Object.getOwnPropertyDescriptors(Array)).to.deep.equals(arrayBits);
   return result;
 }

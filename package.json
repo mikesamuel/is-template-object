@@ -11,6 +11,10 @@
     "shim.js"
   ],
   "scripts": {
+    "cover": "istanbul cover _mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls",
+    "lint": "eslint .",
+    "prepack": "npm run lint && npm test",
     "test": "mocha"
   },
   "repository": {
@@ -29,6 +33,48 @@
   "homepage": "https://github.com/mikesamuel/is-template-object#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.1.4"
+    "coveralls": "^3.0.4",
+    "eslint": "^5.16.0",
+    "eslint-config-strict": "^14.0.1",
+    "mocha": "^6.1.4",
+    "mocha-lcov-reporter": "^1.3.0"
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.js"
+        ],
+        "env": {
+          "node": true
+        }
+      }
+    ],
+    "extends": [
+      "strict"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "source",
+      "ecmaFeatures": {
+        "impliedStrict": false
+      }
+    },
+    "rules": {
+      "array-element-newline": "off",
+      "no-warning-comments": [
+        "error",
+        {
+          "terms": [
+            "do not submit"
+          ]
+        }
+      ],
+      "no-void": "off",
+      "strict": [
+        "error",
+        "global"
+      ]
+    }
   }
 }
