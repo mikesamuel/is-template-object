@@ -16,6 +16,11 @@ Requires receiver: false
 [![Coverage Status](https://coveralls.io/repos/github/mikesamuel/is-template-object/badge.svg?branch=master)](https://coveralls.io/github/mikesamuel/is-template-object?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/mikesamuel/is-template-object/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mikesamuel/is-template-object?targetFile=package.json)
 
+The shim installs `Array.isTemplateObject`, a function that returns true for the first argument
+passed to a tag function from a [tagged template literal][].
+
+See the [spec explainer][] for detailed semantics, and use cases.
+
 ## Usage
 
 ```js
@@ -50,3 +55,6 @@ function tag(templateObject, expr) {
 // tag does not to take the trusting path.
 tag([ x, y ], expr);
 ```
+
+[tagged template literal]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates
+[spec explainer]: https://github.com/tc39/proposal-array-is-template-object
