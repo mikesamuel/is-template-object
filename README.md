@@ -1,4 +1,4 @@
-# is-template-object
+# is-template-object polyfill
 
 <!-- This verbiage required per https://github.com/es-shims/es-shim-api#how-to-denote-compliance.
      Do not modify without consulting those docs. -->
