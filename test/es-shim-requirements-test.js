@@ -30,6 +30,21 @@ function doesNotModifyArray(action) {
   return result;
 }
 
+function temporarilyPatch(withOld) {
+  const old = Array.isTemplateObject;
+  const hasOld = Object.hasOwnProperty.call(Array, 'isTemplateObject');
+  delete Array.isTemplateObject;
+  try {
+    withOld(old);
+  } finally {
+    if (hasOld) {
+      Array.isTemplateObject = old;
+    } else {
+      delete Array.isTemplateObject;
+    }
+  }
+}
+
 describe('es-shim-api compatibility', () => {
   const base = '..';
 
@@ -55,78 +70,96 @@ describe('es-shim-api compatibility', () => {
     // We test spec-compliance elsewhere.
   });
 
-  // require('foo').implementation or require('foo/implementation') is
-  // a spec-compliant JS function, that will depend on a receiver (a
-  // “this” value) as the spec requires.
-  it('.implementation', () => {
-    doesNotModifyArray(() => {
-      expect(require(base).implementation).to.equal(defaultExport);
+  describe('implementation', () => {
+    // require('foo').implementation or require('foo/implementation') is
+    // a spec-compliant JS function, that will depend on a receiver (a
+    // “this” value) as the spec requires.
+    it('.implementation', () => {
+      doesNotModifyArray(() => {
+        expect(require(base).implementation).to.equal(defaultExport);
+      });
     });
-  });
-  it('/implementation', () => {
-    doesNotModifyArray(() => {
-      expect(require(`${ base }/implementation`)).to.equal(defaultExport);
-    });
-  });
-
-  // require('foo').getPolyfill or require('foo/polyfill') is a
-  // function that when invoked, will return the most compliant and
-  // performant function that it can - if a native version is
-  // available, and does not violate the spec, then the native
-  // function will be returned - otherwise, either the implementation,
-  // or a custom, wrapped version of the native function, will be
-  // returned. This is also the result that will be used as the
-  // default export.
-  it('.getPolyfill', () => {
-    doesNotModifyArray(() => {
-      expect(require(base).getPolyfill()).to.equal(Array.isTemplateObject || defaultExport);
-    });
-  });
-  it('/polyfill', () => {
-    doesNotModifyArray(() => {
-      expect(require(`${ base }/polyfill`)()).to.equal(Array.isTemplateObject || defaultExport);
-    });
-  });
-
-  // require('foo').shim or require('foo/shim') is a function that
-  // when invoked, will call getPolyfill, and if the polyfill doesn’t
-  // match the built-in value, will install it into the global
-  // environment.
-  it('.shim', () => {
-    doesNotModifyArray(() => {
-      const { shim } = require(base);
-      expect({
-        name: shim.name,
-        length: shim.length,
-        type: typeof shim,
-      }).to.deep.equal({
-        name: 'shim',
-        length: 0,
-        type: 'function',
+    it('/implementation', () => {
+      doesNotModifyArray(() => {
+        expect(require(`${ base }/implementation`)).to.equal(defaultExport);
       });
     });
   });
-  it('/shim', () => {
-    doesNotModifyArray(() => {
-      const shim = require(`${ base }/shim`);
-      expect({
-        name: shim.name,
-        length: shim.length,
-        type: typeof shim,
-      }).to.deep.equal({
-        name: 'shim',
-        length: 0,
-        type: 'function',
+
+  describe('polyfill', () => {
+    // require('foo').getPolyfill or require('foo/polyfill') is a
+    // function that when invoked, will return the most compliant and
+    // performant function that it can - if a native version is
+    // available, and does not violate the spec, then the native
+    // function will be returned - otherwise, either the implementation,
+    // or a custom, wrapped version of the native function, will be
+    // returned. This is also the result that will be used as the
+    // default export.
+    it('.getPolyfill', () => {
+      doesNotModifyArray(() => {
+        expect(require(base).getPolyfill()).to.equal(Array.isTemplateObject || defaultExport);
+      });
+    });
+    it('/polyfill', () => {
+      doesNotModifyArray(() => {
+        expect(require(`${ base }/polyfill`)()).to.equal(Array.isTemplateObject || defaultExport);
+      });
+    });
+  });
+
+  describe('shim', () => {
+    // require('foo').shim or require('foo/shim') is a function that
+    // when invoked, will call getPolyfill, and if the polyfill doesn’t
+    // match the built-in value, will install it into the global
+    // environment.
+    it('.shim', () => {
+      doesNotModifyArray(() => {
+        const { shim } = require(base);
+        expect({
+          name: shim.name,
+          length: shim.length,
+          type: typeof shim,
+        }).to.deep.equal({
+          name: 'shim',
+          length: 0,
+          type: 'function',
+        });
+      });
+    });
+
+    it('/shim', () => {
+      doesNotModifyArray(() => {
+        const shim = require(`${ base }/shim`);
+        expect({
+          name: shim.name,
+          length: shim.length,
+          type: typeof shim,
+        }).to.deep.equal({
+          name: 'shim',
+          length: 0,
+          type: 'function',
+        });
+      });
+    });
+
+    it('does not clobber', () => {
+      // does nothing if the polyfill doesn't match the built-in value.
+      temporarilyPatch((old) => {
+        function isTemplateObject(x) {
+          throw new Error(`placeholder that should not be called ${ x }`);
+        }
+        if (!old) {
+          Array.isTemplateObject = isTemplateObject;
+        }
+        require(base).shim();
+        expect(Array.isTemplateObject).equals(old || isTemplateObject);
       });
     });
   });
 
   // require('foo/auto') will automatically invoke the shim method.
   it('/auto', () => {
-    const old = Array.isTemplateObject;
-    const hasOld = Object.hasOwnProperty.call(Array, 'isTemplateObject');
-    delete Array.isTemplateObject;
-    try {
+    temporarilyPatch(() => {
       require(`${ base }/auto`);
       const { isTemplateObject } = Array;
       const {
@@ -150,12 +183,6 @@ describe('es-shim-api compatibility', () => {
         enumerable: false,
         configurable: true,
       });
-    } finally {
-      if (hasOld) {
-        Array.isTemplateObject = old;
-      } else {
-        delete Array.isTemplateObject;
-      }
-    }
+    });
   });
 });
